@@ -3,6 +3,7 @@ package com.example.user.realmdatabaseseries_2;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -63,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
                     DatabaseInsert(kullaniciAdi, eMail, password);
                 }
             });
+
+            GetPosition();
+
         } catch (Exception ex) {
             Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
         }
@@ -84,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void DatabaseInsert(final String kullaniciAdi, final String eMail, final String password) {
         try {
-
             realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm realm) {
@@ -111,6 +114,39 @@ public class MainActivity extends AppCompatActivity {
                 public void onError(Throwable error) {
                     Toast.makeText(getApplicationContext(), "Kayıt Başarısız", Toast.LENGTH_SHORT).show();
 
+                }
+            });
+
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void GetPosition() {
+        try {
+
+            userList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    KayitSil(position);
+                }
+            });
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void KayitSil(final int position) {
+        try {
+
+            final RealmResults<UserEntity> userEntities = realm.where(UserEntity.class).findAll();
+
+            realm.executeTransaction(new Realm.Transaction() {
+                @Override
+                public void execute(Realm realm) {
+                    UserEntity userEntity = userEntities.get(position);
+                    userEntity.deleteFromRealm();
+                    ListeyiGoster();
                 }
             });
 
